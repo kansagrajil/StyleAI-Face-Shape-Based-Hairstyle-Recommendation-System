@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Control Panel — StyleAI System Management & Analytics">
+    <title>Admin Control Panel — StyleAI</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Tokens & Component Styles -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top glass-navbar" id="navbar">
+        <div class="container-fluid px-4">
+            <a href="/" class="navbar-brand d-flex align-items-center gap-2">
+                <span class="logo-icon fs-4">⚡</span>
+                <span class="fw-bold fs-4">Style<span class="text-gradient">AI Admin</span></span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3 fw-medium">
+                    <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="/pages/dashboard.html" class="nav-link">User Dashboard</a></li>
+                    <li class="nav-item"><a href="/pages/admin.html" class="nav-link active">Admin Portal</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-2" id="navAuth">
+                    <div class="d-flex align-items-center gap-2" id="navUserMenu">
+                        <span class="badge bg-danger rounded-pill px-3 py-2">Administrator</span>
+                        <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="AppAuth.logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="page-content pt-5">
+        <div class="container-fluid px-4 py-5">
+            
+            <!-- Page Header -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 animate-fade-in-up">
+                <div>
+                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 mb-2">Management Portal</span>
+                    <h1 class="display-6 fw-bold mb-1">System Administration & Analytics</h1>
+                    <p class="text-muted mb-0">Manage platform users, hairstyle catalog, face shape rules, and storage</p>
+                </div>
+                <button class="btn btn-outline-light rounded-pill px-4" onclick="Admin.loadAllData()">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Refresh Data
+                </button>
+            </div>
+
+            <!-- Tabbed Navigation Bar -->
+            <ul class="nav nav-pills custom-pills mb-4 gap-2 border-bottom border-white-10 pb-3" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill px-4" id="tab-analytics-btn" data-bs-toggle="tab" data-bs-target="#tab-analytics" type="button" role="tab">
+                        <i class="bi bi-graph-up-arrow me-2"></i>System Analytics
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="tab-users-btn" data-bs-toggle="tab" data-bs-target="#tab-users" type="button" role="tab">
+                        <i class="bi bi-people-fill me-2"></i>User Management
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="tab-hairstyles-btn" data-bs-toggle="tab" data-bs-target="#tab-hairstyles" type="button" role="tab">
+                        <i class="bi bi-scissors me-2"></i>Hairstyle Catalog CRUD
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="tab-rules-btn" data-bs-toggle="tab" data-bs-target="#tab-rules" type="button" role="tab">
+                        <i class="bi bi-sliders me-2"></i>Face Shapes & Rules
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="tab-images-btn" data-bs-toggle="tab" data-bs-target="#tab-images" type="button" role="tab">
+                        <i class="bi bi-folder-fill me-2"></i>Uploaded Storage
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Contents -->
+            <div class="tab-content" id="adminTabContent">
+
+                <!-- ── TAB 1: System Analytics ───────────────────────────── -->
+                <div class="tab-pane fade show active" id="tab-analytics" role="tabpanel">
+                    <!-- KPI Cards Row -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="glass-card p-4 text-center">
+                                <div class="fs-1 text-primary mb-1"><i class="bi bi-people"></i></div>
+                                <h2 class="display-6 fw-bold mb-0" id="statTotalUsers">0</h2>
+                                <p class="text-muted small mb-0">Total Registered Users</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="glass-card p-4 text-center">
+                                <div class="fs-1 text-success mb-1"><i class="bi bi-person-bounding-box"></i></div>
+                                <h2 class="display-6 fw-bold mb-0" id="statTotalScans">0</h2>
+                                <p class="text-muted small mb-0">Face Scans Performed</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="glass-card p-4 text-center">
+                                <div class="fs-1 text-warning mb-1"><i class="bi bi-magic"></i></div>
+                                <h2 class="display-6 fw-bold mb-0" id="statTotalTryons">0</h2>
+                                <p class="text-muted small mb-0">Virtual Try-On Previews</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="glass-card p-4 text-center">
+                                <div class="fs-1 text-info mb-1"><i class="bi bi-scissors"></i></div>
+                                <h2 class="display-6 fw-bold mb-0" id="statTotalHairstyles">0</h2>
+                                <p class="text-muted small mb-0">Catalog Hairstyles</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Face Shape Distribution & Top Hairstyles -->
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+                            <div class="glass-card p-4 h-100">
+                                <h3 class="h5 fw-bold mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Face Shape Category Distribution</h3>
+                                <div id="shapeDistributionBars">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5">
+                            <div class="glass-card p-4 h-100">
+                                <h3 class="h5 fw-bold mb-3"><i class="bi bi-trophy-fill text-warning me-2"></i>Top Recommended Hairstyles</h3>
+                                <ul class="list-group list-group-flush bg-transparent" id="topHairstylesList">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB 2: User Management ────────────────────────────── -->
+                <div class="tab-pane fade" id="tab-users" role="tabpanel">
+                    <div class="glass-card p-4">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                            <h3 class="h5 fw-bold mb-0"><i class="bi bi-people-fill me-2 text-primary"></i>User Account Directory</h3>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="text" class="form-control form-control-sm bg-dark text-light border-white-10" id="userSearchInput" placeholder="Search name or email..." oninput="Admin.loadUsers()">
+                                <select class="form-select form-select-sm bg-dark text-light border-white-10" id="userRoleFilter" onchange="Admin.loadUsers()">
+                                    <option value="">All Roles</option>
+                                    <option value="admin">Admin Only</option>
+                                    <option value="user">User Only</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover align-middle mb-0" id="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Registered</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB 3: Hairstyle Catalog CRUD ─────────────────────── -->
+                <div class="tab-pane fade" id="tab-hairstyles" role="tabpanel">
+                    <div class="glass-card p-4">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                            <h3 class="h5 fw-bold mb-0"><i class="bi bi-scissors me-2 text-primary"></i>Hairstyle Catalog</h3>
+                            <button class="btn btn-primary btn-sm rounded-pill px-4 shadow" onclick="Admin.openAddHairstyleModal()">
+                                <i class="bi bi-plus-circle me-1"></i>Add New Hairstyle
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover align-middle mb-0" id="hairstylesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Face Shapes</th>
+                                        <th>Gender</th>
+                                        <th>Length</th>
+                                        <th>Category</th>
+                                        <th>Popularity</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB 4: Face Shapes & Rules ────────────────────────── -->
+                <div class="tab-pane fade" id="tab-rules" role="tabpanel">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="glass-card p-4 h-100">
+                                <h3 class="h5 fw-bold mb-3"><i class="bi bi-grid-3x3-gap-fill me-2 text-primary"></i>Target Face Shape Categories (6 Shapes)</h3>
+                                <div id="faceShapeCategoryList">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="glass-card p-4 h-100">
+                                <h3 class="h5 fw-bold mb-3"><i class="bi bi-sliders me-2 text-warning"></i>Recommendation Ranking Weights</h3>
+                                <div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-white-10">
+                                    <p class="small text-muted mb-3">Multi-criteria compatibility scoring parameters:</p>
+                                    <div class="mb-2"><strong>Primary Shape Match:</strong> 85% Base Score</div>
+                                    <div class="mb-2"><strong>User Rating Bonus:</strong> up to +8% Score</div>
+                                    <div class="mb-2"><strong>Popularity Index Bonus:</strong> up to +5% Score</div>
+                                    <div class="mb-0"><strong>Filter Match Bonus:</strong> up to +5% Score</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB 5: Uploaded Storage ───────────────────────────── -->
+                <div class="tab-pane fade" id="tab-images" role="tabpanel">
+                    <div class="glass-card p-4">
+                        <h3 class="h5 fw-bold mb-4"><i class="bi bi-folder-fill me-2 text-primary"></i>Uploaded Image Storage Files</h3>
+                        <div class="row g-4" id="uploadedImagesGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Add / Edit Hairstyle -->
+    <div class="modal fade" id="hairstyleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content glass-card border-gradient text-light">
+                <div class="modal-header border-white-10">
+                    <h5 class="modal-title fw-bold" id="hsModalTitle">Add Hairstyle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="hsForm" onsubmit="Admin.saveHairstyle(event)">
+                    <div class="modal-body">
+                        <input type="hidden" id="hsId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small">Hairstyle Name</label>
+                                <input type="text" class="form-control bg-dark text-light border-white-10" id="hsName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">URL Slug</label>
+                                <input type="text" class="form-control bg-dark text-light border-white-10" id="hsSlug" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Gender</label>
+                                <select class="form-select bg-dark text-light border-white-10" id="hsGender">
+                                    <option value="unisex">Unisex</option>
+                                    <option value="female">Female</option>
+                                    <option value="male">Male</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Hair Length</label>
+                                <select class="form-select bg-dark text-light border-white-10" id="hsLength">
+                                    <option value="short">Short</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="long">Long</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Category</label>
+                                <select class="form-select bg-dark text-light border-white-10" id="hsCategory">
+                                    <option value="modern">Modern</option>
+                                    <option value="classic">Classic</option>
+                                    <option value="edgy">Edgy</option>
+                                    <option value="formal">Formal</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="trending">Trending</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Popularity Score (0-100)</label>
+                                <input type="number" class="form-control bg-dark text-light border-white-10" id="hsPopularity" value="85" min="0" max="100">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small">Compatible Face Shapes (comma-separated: oval, round, square, heart, diamond, oblong)</label>
+                                <input type="text" class="form-control bg-dark text-light border-white-10" id="hsFaceShapes" placeholder="oval, round, heart" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small">Image URL</label>
+                                <input type="text" class="form-control bg-dark text-light border-white-10" id="hsImageUrl" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small">Description</label>
+                                <textarea class="form-control bg-dark text-light border-white-10" id="hsDescription" rows="3" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-white-10">
+                        <button type="button" class="btn btn-outline-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Save Hairstyle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer border-top border-white-10 py-4 text-center text-muted small mt-auto">
+        <div class="container">© 2026 StyleAI — Face Shape Based Hairstyle Recommendation System</div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 1080;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/faceshapes.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

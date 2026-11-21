@@ -1,0 +1,78 @@
+# ==============================================================================
+# StyleAI - Face Shape Based Hairstyle Recommendation System .gitignore
+# ==============================================================================
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+*.coverage.*
+
+# Virtual Environments
+venv/
+.venv/
+env/
+venv_*/
+python*/
+uv_python/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+
+# File Uploads & Local Outputs
+server/uploads/*
+!server/uploads/.gitkeep
+output/
+*.webp
+*.jpg
+*.png
+!client/assets/**
+!workflow/**
+
+# Machine Learning Artifacts & Models (large binary files)
+ml/models/*.h5
+ml/models/*.keras
+ml/models/*.safetensors
+ml/models/saved_model/
+ml/data/raw/
+ml/data/processed/
+
+# Application Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE & Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Docker & Containerization
+docker/ssl/
+docker/*.log

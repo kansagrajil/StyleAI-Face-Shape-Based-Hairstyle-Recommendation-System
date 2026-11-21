@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View your face shape analysis results and personalized hairstyle recommendations powered by AI.">
+    <title>Recommendation Dashboard — StyleAI</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Tokens & Component Styles -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top glass-navbar" id="navbar">
+        <div class="container-fluid px-4">
+            <a href="/" class="navbar-brand d-flex align-items-center gap-2">
+                <span class="logo-icon fs-4">✂️</span>
+                <span class="fw-bold fs-4">Style<span class="text-gradient">AI</span></span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3 fw-medium">
+                    <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="/pages/analyze.html" class="nav-link">Analyze Face</a></li>
+                    <li class="nav-item"><a href="/pages/dashboard.html" class="nav-link">Dashboard</a></li>
+                    <li class="nav-item"><a href="/pages/history.html" class="nav-link">History</a></li>
+                    <li class="nav-item"><a href="/pages/about.html" class="nav-link">About AI</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-2" id="navAuth">
+                    <a href="/pages/login.html" class="btn btn-outline-light btn-sm rounded-pill px-3" id="navLoginBtn">Log In</a>
+                    <a href="/pages/register.html" class="btn btn-primary btn-sm rounded-pill px-4" id="navRegisterBtn">Sign Up</a>
+                    <div class="d-none d-flex align-items-center gap-2" id="navUserMenu">
+                        <a href="/pages/profile.html" id="navUserName" class="btn btn-outline-light btn-sm rounded-pill">👤 Account</a>
+                        <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="AppAuth.logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="page-content pt-5">
+        <div class="container py-5">
+            
+            <!-- Dashboard Hero Overview Row -->
+            <div class="glass-card p-4 p-md-5 mb-4 border-gradient shadow-2xl animate-scale-in" id="resultCard">
+                <div class="row align-items-center g-4">
+                    <!-- Left: Uploaded Portrait Image View -->
+                    <div class="col-lg-4 text-center">
+                        <div class="position-relative d-inline-block rounded-4 overflow-hidden shadow-lg border border-white-10 max-w-300">
+                            <img id="userUploadedImg" src="" alt="Uploaded Portrait" class="w-100 h-auto object-cover d-none">
+                            <div id="userImgPlaceholder" class="p-5 text-center bg-secondary-subtle">
+                                <i class="bi bi-person-bounding-box display-1 text-primary"></i>
+                            </div>
+                            <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 start-50 translate-middle-x mb-2 px-3 py-1 rounded-pill small border border-white-10">
+                                <i class="bi bi-patch-check-fill text-success me-1"></i>MediaPipe Landmark Verified
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Right: Detected Face Shape & Confidence Score -->
+                    <div class="col-lg-8 text-center text-lg-start">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-2 mb-2">
+                            <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">AI Face Detection Complete</span>
+                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2" id="modelVerBadge">TensorFlow DNN v1.0</span>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-center justify-content-lg-start gap-3 my-2">
+                            <span class="display-3" id="resultIcon">🎯</span>
+                            <div>
+                                <h1 class="display-4 fw-extrabold mb-0 text-capitalize" id="resultShapeName">—</h1>
+                                <p class="text-muted fs-5 mb-0" id="resultConfidence">Confidence: —%</p>
+                            </div>
+                        </div>
+
+                        <div class="progress max-w-500 my-3" style="height: 12px;">
+                            <div class="progress-bar bg-gradient-primary rounded-pill" id="confidenceBar" role="progressbar" style="width: 0%"></div>
+                        </div>
+
+                        <!-- 6-Class Probability Score Breakdown -->
+                        <div class="mt-4 pt-3 border-top border-white-10" id="scoreBars">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Toolbar: Save, Download, Share -->
+                <div class="d-flex flex-wrap align-items-center justify-content-center gap-3 mt-4 pt-3 border-top border-white-10">
+                    <button class="btn btn-outline-success rounded-pill px-4 shadow-sm" id="saveResultBtn" onclick="Results.saveResult()">
+                        <i class="bi bi-bookmark-check-fill me-2"></i>Save to History
+                    </button>
+                    <button class="btn btn-outline-info rounded-pill px-4 shadow-sm" id="downloadReportBtn" onclick="Results.downloadReport()">
+                        <i class="bi bi-download me-2"></i>Download Report
+                    </button>
+                    <button class="btn btn-outline-warning rounded-pill px-4 shadow-sm" id="shareResultBtn" onclick="Results.shareResult()">
+                        <i class="bi bi-share-fill me-2"></i>Share Results
+                    </button>
+                </div>
+            </div>
+
+            <!-- Gemini AI Advice & Explanations Card -->
+            <div class="glass-card p-4 p-md-5 mb-5 border-gradient shadow-lg animate-fade-in-up" id="aiAdviceCard">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="fs-2 text-warning"><i class="bi bi-stars"></i></div>
+                    <div>
+                        <h3 class="h4 fw-bold mb-0">Personalized Recommendation Explanations</h3>
+                        <p class="text-muted small mb-0">Generative AI explanation tailored to your face geometry</p>
+                    </div>
+                </div>
+                
+                <div class="ai-advice-text lead text-light mb-4" id="aiAdviceText">Generating custom advice...</div>
+
+                <div class="row g-4" id="adviceDetailsRow">
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-white-10 h-100">
+                            <h5 class="fw-bold text-success mb-3"><i class="bi bi-check-circle-fill me-2"></i>Key Styling Recommendations</h5>
+                            <ul class="list-group list-group-flush bg-transparent" id="aiRecList">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-white-10 h-100">
+                            <h5 class="fw-bold text-danger mb-3"><i class="bi bi-x-circle-fill me-2"></i>Styles & Cuts to Avoid</h5>
+                            <ul class="list-group list-group-flush bg-transparent" id="aiAvoidList">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top border-white-10">
+                    <h5 class="fw-bold text-info mb-2"><i class="bi bi-lightbulb-fill me-2"></i>Daily Maintenance & Styling Tips</h5>
+                    <ul class="mb-0 text-muted small" id="aiTipList">
+                        <!-- Populated dynamically -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Recommended Hairstyles Grid -->
+            <div class="mb-5">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                    <div>
+                        <h2 class="display-6 fw-bold mb-1">Top Recommended Hairstyles</h2>
+                        <p class="text-muted mb-0">Ranked by shape compatibility, texture match, and popularity</p>
+                    </div>
+                </div>
+
+                <div class="row g-4" id="hairstyleGrid">
+                    <!-- Populated dynamically by JS -->
+                </div>
+            </div>
+
+            <!-- Bottom Quick Actions -->
+            <div class="text-center my-4">
+                <a href="/pages/analyze.html" class="btn btn-outline-light btn-lg rounded-pill px-4 me-2">
+                    <i class="bi bi-arrow-repeat me-2"></i>Analyze Another Photo
+                </a>
+                <a href="/pages/dashboard.html" class="btn btn-primary btn-lg rounded-pill px-4 shadow-lg">
+                    <i class="bi bi-speedometer2 me-2"></i>Go to User Dashboard
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer border-top border-white-10 py-4 text-center text-muted small mt-auto">
+        <div class="container">© 2026 StyleAI — Face Shape Based Hairstyle Recommendation System</div>
+    </footer>
+
+    <!-- Toast & Overlay -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 1080;"></div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="loading-text mt-3 fw-medium" id="loadingText">Retrieving analysis record...</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/faceshapes.js"></script>
+    <script src="../js/results.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

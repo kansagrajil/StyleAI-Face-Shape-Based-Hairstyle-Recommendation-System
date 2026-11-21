@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Powered Virtual Hairstyle Try-On Studio.">
+    <title>Virtual Try-On Studio — StyleAI</title>
+    <!-- Fonts & Bootstrap 5 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body class="bg-dark text-light min-vh-100 d-flex flex-column">
+
+    <!-- ── Navbar ─────────────────────────────────────────────── -->
+    <nav class="navbar navbar-expand-lg sticky-top border-bottom border-white-10 glass-nav" id="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand d-flex align-items-center gap-2">
+                <span class="fs-4">✂️</span>
+                <span class="fw-bold tracking-tight text-white fs-4">Style<span class="text-gradient">AI</span></span>
+            </a>
+
+            <button class="navbar-toggler border-0 text-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav me-auto ms-lg-4 mb-2 mb-lg-0 gap-lg-2">
+                    <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="/pages/analyze.html" class="nav-link">Analyze Face</a></li>
+                    <li class="nav-item"><a href="/pages/dashboard.html" class="nav-link">Dashboard</a></li>
+                    <li class="nav-item"><a href="/pages/history.html" class="nav-link">History</a></li>
+                    <li class="nav-item"><a href="/pages/about.html" class="nav-link">About AI</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3" id="navAuth">
+                    <a href="/pages/login.html" class="btn btn-outline-light btn-sm rounded-pill px-4" id="navLoginBtn">Log In</a>
+                    <a href="/pages/register.html" class="btn btn-primary btn-sm rounded-pill px-4 shadow" id="navRegisterBtn">Sign Up</a>
+                    <div class="d-none dropdown" id="navUserMenu">
+                        <button class="btn btn-outline-light btn-sm rounded-pill px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <span id="navUserName">Account</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow rounded-4">
+                            <li><a class="dropdown-item" href="/pages/dashboard.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/pages/profile.html"><i class="bi bi-person me-2"></i>Profile Preferences</a></li>
+                            <li><hr class="dropdown-divider border-white-10"></li>
+                            <li><button class="dropdown-item text-danger" onclick="AppAuth.logout()"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── Page Content ───────────────────────────────────────── -->
+    <main class="page-content flex-grow-1 py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill text-uppercase tracking-wider fw-bold mb-2">
+                    ✨ Virtual Try-On Studio
+                </span>
+                <h1 class="display-5 fw-extrabold text-light mb-2" id="tryonTitle">Hairstyle Visualization</h1>
+                <p class="text-muted max-w-600 mx-auto">AI-synthesized preview matching your facial features & bone structure.</p>
+            </div>
+
+            <!-- Try-On Result Section -->
+            <div id="tryonResult" class="d-none">
+                <!-- Metadata Header Card -->
+                <div class="glass-card p-4 mb-4 border-gradient">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-7">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge bg-primary text-uppercase" id="tryonFaceShapeBadge">Face Shape</span>
+                                <span class="badge bg-secondary border border-white-10 text-light px-3 py-1" id="tryonModelVersion">Model: v3.0</span>
+                            </div>
+                            <h2 class="h3 fw-bold text-light mb-1" id="tryonHairstyleName">Hairstyle Title</h2>
+                            <p class="text-muted small mb-0" id="tryonMetaTime"><i class="bi bi-clock me-1"></i>Generated recently</p>
+                        </div>
+                        <div class="col-md-5 text-md-end">
+                            <a href="/pages/results.html" class="btn btn-outline-light btn-sm rounded-pill px-3 me-2">
+                                <i class="bi bi-arrow-left me-1"></i>Back to Results
+                            </a>
+                            <button class="btn btn-primary btn-sm rounded-pill px-4 shadow" onclick="TryOn.downloadPreview()">
+                                <i class="bi bi-download me-1"></i>Download Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side-by-Side Comparison Grid -->
+                <div class="row g-4 mb-5">
+                    <!-- 1. Original User Photo -->
+                    <div class="col-md-4">
+                        <div class="glass-card p-3 text-center h-100 d-flex flex-column justify-content-between">
+                            <span class="badge bg-dark text-muted mb-2 text-uppercase" style="font-size: 0.7rem;">Reference Portrait</span>
+                            <div class="rounded-4 overflow-hidden mb-3 border border-white-10 shadow-sm bg-black" style="aspect-ratio: 1/1;">
+                                <img id="userImg" src="" alt="Original Portrait" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <div class="fw-semibold text-muted small">Your Face Scan</div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Virtual Try-On Result Preview (Center Spotlight) -->
+                    <div class="col-md-4">
+                        <div class="glass-card p-3 text-center h-100 border-primary border-opacity-50 shadow-lg d-flex flex-column justify-content-between position-relative">
+                            <span class="badge bg-gradient-primary text-white mb-2 text-uppercase shadow-sm" style="font-size: 0.75rem;">
+                                ✨ Virtual Try-On Result
+                            </span>
+                            <div class="rounded-4 overflow-hidden mb-3 border border-primary border-opacity-25 shadow bg-black position-relative" style="aspect-ratio: 1/1;">
+                                <img id="tryonPreviewImg" src="" alt="Virtual Try-On Result" class="w-100 h-100 object-fit-cover">
+                                <div class="position-absolute bottom-0 start-0 end-0 p-2 bg-dark bg-opacity-75 text-light text-center small fw-semibold" style="backdrop-filter: blur(4px);">
+                                    StyleAI Simulated Preview
+                                </div>
+                            </div>
+                            <div class="fw-bold text-light small">AI Synthetic Hairstyle Overlay</div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Reference Hairstyle Catalog Photo -->
+                    <div class="col-md-4">
+                        <div class="glass-card p-3 text-center h-100 d-flex flex-column justify-content-between">
+                            <span class="badge bg-dark text-muted mb-2 text-uppercase" style="font-size: 0.7rem;">Catalog Hairstyle Reference</span>
+                            <div class="rounded-4 overflow-hidden mb-3 border border-white-10 shadow-sm bg-black" style="aspect-ratio: 1/1;">
+                                <img id="hairstyleRefImg" src="" alt="Catalog Style Reference" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <div class="fw-semibold text-muted small" id="hairstyleRefTitle">Target Hairstyle</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Stylist Advice Explanation Card -->
+                <div class="glass-card p-4 p-md-5 mb-5 border-gradient">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="fs-2 text-accent"><i class="bi bi-stars"></i></div>
+                        <div>
+                            <h3 class="h5 fw-bold text-light mb-0">AI Stylist Suitability Advice</h3>
+                            <span class="text-muted small">Generated specifically for your face shape</span>
+                        </div>
+                    </div>
+                    <p class="text-light leading-relaxed mb-0 fs-6" id="tryonDescriptionText">
+                        Loading personalized advice...
+                    </p>
+                </div>
+
+                <!-- Action Toolbar -->
+                <div class="glass-card p-4 text-center">
+                    <h4 class="h6 fw-bold text-light mb-3">What would you like to do next?</h4>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="/pages/analyze.html" class="btn btn-outline-light rounded-pill px-4">
+                            <i class="bi bi-camera me-2"></i>New Face Scan
+                        </a>
+                        <a href="/pages/results.html" class="btn btn-primary rounded-pill px-4 shadow">
+                            <i class="bi bi-grid me-2"></i>Explore Other Hairstyles
+                        </a>
+                        <button class="btn btn-outline-info rounded-pill px-4" onclick="TryOn.shareResult()">
+                            <i class="bi bi-share me-2"></i>Share Result
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State (No Try-On Selected) -->
+            <div id="tryonEmpty" class="text-center py-5">
+                <div class="glass-card p-5 max-w-500 mx-auto">
+                    <div class="fs-1 text-primary mb-3">🪄</div>
+                    <h3 class="h4 fw-bold text-light mb-2">No Try-On Result Selected</h3>
+                    <p class="text-muted small mb-4">Go to your analysis results page and click "Try On" on any recommended hairstyle.</p>
+                    <a href="/pages/analyze.html" class="btn btn-accent btn-lg rounded-pill px-5 shadow">
+                        📸 Analyze Face Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ── Footer ─────────────────────────────────────────────── -->
+    <footer class="footer border-top border-white-10 py-4 text-center text-muted small mt-auto">
+        <div class="container">© 2026 StyleAI — Face Shape Based Hairstyle Recommendation System</div>
+    </footer>
+
+    <!-- Toast & Overlay -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 1080;"></div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="loading-text mt-3 fw-medium" id="loadingText">Generating virtual try-on preview...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/faceshapes.js"></script>
+    <script src="../js/tryon.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>
